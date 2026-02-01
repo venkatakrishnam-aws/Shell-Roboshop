@@ -9,21 +9,31 @@ ZoneID="Z0031597K7311GPXG9MF"
 Domain="vk98.space"
 
 for instance in "${instances[@]}"; do 
-echo "Deploying $instance..." # Add your AWS CLI or deployment commands here done
+    echo "Deploying $instance..."
+    # Example: aws ec2 run-instances --image-id $AMIID --instance-type $InstanceType --security-group-ids $SecurityGroup --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$instance}]" --placement AvailabilityZone=$Zone
+
     echo "Created EC2 instance for $instance"
 
     if [ "$instance" != "frontend" ]; then
-        IP=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=$instance" "Name=instance-state-name,Values=running" --query "Reservations[0].Instances[0].PrivateIpAddress" --output text)
+        IP=$(aws ec2 describe-instances \
+            --filters "Name=tag:Name,Values=$instance" "Name=instance-state-name,Values=running" \
+            --query "Reservations[0].Instances[0].PrivateIpAddress" --output text)
+
         echo "Assigning Private Hosted Zone record for $instance with IP $IP"
-        aws route53 change-resource-record-sets --hosted-zone-id $ZoneID --change-request "Changes=[{Action=UPSERT,ResourceRecordSet={Name=$instance.$Domain.,Type=A,ResourceRecords=[{Value=$IP}]}}]"
+        aws route53 change-resource-record-sets --hosted-zone-id $ZoneID --change-batch \
+            "{\"Changes\":[{\"Action\":\"UPSERT\",\"ResourceRecordSet\":{\"Name\":\"$instance.$Domain.\",\"Type\":\"A\",\"ResourceRecords\":[{\"Value\":\"$IP\"}]}}]}"
         echo "Assigned Private Hosted Zone record for $instance"
     else
-        IP=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=$instance" "Name=instance-state-name,Values=running" --query "Reservations[0].Instances[0].PublicIpAddress" --output text)
+        IP=$(aws ec2 describe-instances \
+            --filters "Name=tag:Name,Values=$instance" "Name=instance-state-name,Values=running" \
+            --query "Reservations[0].Instances[0].PublicIpAddress" --output text)
+
         echo "Assigning Public DNS record for $instance with IP $IP"
-        aws route53 change-resource-record-sets --hosted-zone-id $ZoneID --change-request "Changes=[{Action=UPSERT,ResourceRecord
+        aws route53 change-resource-record-sets --hosted-zone-id $ZoneID --change-batch \
+            "{\"Changes\":[{\"Action\":\"UPSERT\",\"ResourceRecordSet\":{\"Name\":\"$Domain.\",\"Type\":\"A\",\"ResourceRecords\":[{\"Value\":\"$IP\"}]}}]}"
+        echo "Assigned Public DNS record for $instance"
     fi
 done
 
 echo "All EC2 instances created and DNS records assigned"
-
-# Note: Ensure that AWS CLI is configured with appropriate permissions before running this script.
+echo "Deployment script completed."
