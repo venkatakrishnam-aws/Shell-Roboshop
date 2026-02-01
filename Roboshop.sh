@@ -15,24 +15,39 @@ for instance in "${instances[@]}"; do
     echo "Created EC2 instance for $instance"
 
     if [ "$instance" != "frontend" ]; then
-        IP=$(aws ec2 describe-instances \
-            --filters "Name=tag:Name,Values=$instance" "Name=instance-state-name,Values=running" \
-            --query "Reservations[0].Instances[0].PrivateIpAddress" --output text)
+    IP=$(aws ec2 describe-instances \
+        --filters "Name=tag:Name,Values=$instance" "Name=instance-state-name,Values=running" \
+        --query "Reservations[0].Instances[0].PrivateIpAddress" --output text)
 
-        echo "Assigning Private Hosted Zone record for $instance with IP $IP"
-        aws route53 change-resource-record-sets --hosted-zone-id $ZoneID --change-batch \
-            "{\"Changes\":[{\"Action\":\"UPSERT\",\"ResourceRecordSet\":{\"Name\":\"$instance.$Domain.\",\"Type\":\"A\",\"ResourceRecords\":[{\"Value\":\"$IP\"}]}}]}"
-        echo "Assigned Private Hosted Zone record for $instance"
-    else
-        IP=$(aws ec2 describe-instances \
-            --filters "Name=tag:Name,Values=$instance" "Name=instance-state-name,Values=running" \
-            --query "Reservations[0].Instances[0].PublicIpAddress" --output text)
+    aws route53 change-resource-record-sets --hosted-zone-id $ZoneID --change-batch "{
+      \"Changes\": [{
+        \"Action\": \"UPSERT\",
+        \"ResourceRecordSet\": {
+          \"Name\": \"$instance.$Domain.\",
+          \"Type\": \"A\",
+          \"TTL\": 60,
+          \"ResourceRecords\": [{\"Value\": \"$IP\"}]
+        }
+      }]
+    }"
+else
+    IP=$(aws ec2 describe-instances \
+        --filters "Name=tag:Name,Values=$instance" "Name=instance-state-name,Values=running" \
+        --query "Reservations[0].Instances[0].PublicIpAddress" --output text)
 
-        echo "Assigning Public DNS record for $instance with IP $IP"
-        aws route53 change-resource-record-sets --hosted-zone-id $ZoneID --change-batch \
-            "{\"Changes\":[{\"Action\":\"UPSERT\",\"ResourceRecordSet\":{\"Name\":\"$Domain.\",\"Type\":\"A\",\"ResourceRecords\":[{\"Value\":\"$IP\"}]}}]}"
-        echo "Assigned Public DNS record for $instance"
-    fi
+    aws route53 change-resource-record-sets --hosted-zone-id $ZoneID --change-batch "{
+      \"Changes\": [{
+        \"Action\": \"UPSERT\",
+        \"ResourceRecordSet\": {
+          \"Name\": \"$Domain.\",
+          \"Type\": \"A\",
+          \"TTL\": 60,
+          \"ResourceRecords\": [{\"Value\": \"$IP\"}]
+        }
+      }]
+    }"
+fi
+    echo "Assigned DNS record for $instance"
 done
 
 echo "All EC2 instances created and DNS records assigned"
