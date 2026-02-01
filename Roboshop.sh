@@ -3,7 +3,7 @@
 AMIID="ami-09c813fb71547fc4f"
 SecurityGroup="sg-0af8866461c9712e4"
 InstanceType="t2.micro"
-instances=("mongoDB" "redis" "mysql" "rabbitmq" "catalogue" "user" "cart" "shipping" "payment" "dispatch" "frontend")
+instances=("mongoDB" "redis" "mysql" "rabbitmq" "catalogue" "user" "cart" "shipping" "payment" "dispatch" "frontend"); 
 Zone="us-east-1a"
 ZoneID="Z0031597K7311GPXG9MF"
 Domain="vk98.space"
