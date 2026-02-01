@@ -24,6 +24,6 @@ echo "Deploying $instance..." # Add your AWS CLI or deployment commands here don
     fi
 done
 
-echo "All EC2 instances created and DNS records assigned."
+echo "All EC2 instances created and DNS records assigned"
 
 # Note: Ensure that AWS CLI is configured with appropriate permissions before running this script.
