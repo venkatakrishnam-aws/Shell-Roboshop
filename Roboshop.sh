@@ -8,11 +8,8 @@ Zone="us-east-1a"
 ZoneID="Z0031597K7311GPXG9MF"
 Domain="vk98.space"
 
-for instance in "${instances[@]}"; do
-  echo "Creating EC2 instance for $instance"
-  aws ec2 run-instances --image-id $AMIID --count 1 --instance-type $InstanceType --security-group-ids $SecurityGroup --placement "AvailabilityZone=$Zone" --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$instance}]" 
-          --query 'reservations[0].instances[0].private-ip-address' --output text
-
+for instance in "${instances[@]}"; do 
+echo "Deploying $instance..." # Add your AWS CLI or deployment commands here done
     echo "Created EC2 instance for $instance"
 
     if [ "$instance" != "frontend" ]; then
@@ -26,6 +23,7 @@ for instance in "${instances[@]}"; do
         aws route53 change-resource-record-sets --hosted-zone-id $ZoneID --change-request "Changes=[{Action=UPSERT,ResourceRecord
     fi
 done
+
 echo "All EC2 instances created and DNS records assigned."
 
 # Note: Ensure that AWS CLI is configured with appropriate permissions before running this script.
