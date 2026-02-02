@@ -1,5 +1,4 @@
 #!/bin/bash 
-
 AMIID="ami-09c813fb71547fc4f"
 SecurityGroup="sg-0af8866461c9712e4"
 InstanceType="t2.micro"
@@ -45,11 +44,11 @@ for instance in "${instances[@]}"; do
             echo "Assigning Public DNS record for $instance with IP $IP"
             aws route53 change-resource-record-sets --hosted-zone-id $ZoneID --change-batch "{
               \"Changes\": [{
-                \"Action\": \"UPSERT\",
+                \"Action\": \"create\",\"delete\", \"UPSERT\",
                 \"ResourceRecordSet\": {
                   \"Name\": \"$Domain.\",
                   \"Type\": \"A\",
-                  \"TTL\": 60,
+                  \"TTL\": 1,
                   \"ResourceRecords\": [{\"Value\": \"$IP\"}]
                 }
               }]
@@ -62,3 +61,4 @@ for instance in "${instances[@]}"; do
 done
 
 echo "All EC2 instances created and DNS records assigned (where IPs were available)"
+ 
