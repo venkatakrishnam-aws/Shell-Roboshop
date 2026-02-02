@@ -13,7 +13,7 @@ mkdir -p $logs_folder
 echo -e "${green}script started at: $(date)${nocolor}"  | tee -a $log_file
 
 #check for root user
-if [ $USERID -ne 0 ] then
+if [ $USERID -ne 0 ]; then
    echo "You are not a root user, please switch to root access to run this script"  | tee -a $log_file
    exit 1
 else
