@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Variables
-AMIID="ami-09c813fb71547fc4f"
+AMIID="ami-0220d79f3f480ecf5"
 SecurityGroup="sg-0af8866461c9712e4"
 InstanceType="t2.micro"
 instances=("mongoDB" "redis" "mysql" "rabbitmq" "catalogue" "user" "cart" "shipping" "payment" "dispatch" "frontend")
