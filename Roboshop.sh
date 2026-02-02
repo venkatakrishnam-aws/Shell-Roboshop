@@ -58,3 +58,8 @@ for instance in "${instances[@]}"; do
             echo "⚠️ Skipping DNS assignment for $instance — no IP found"
         fi
     fi
+done  
+echo "All instances deployed and DNS records assigned."
+#!/bin/bash
+
+
