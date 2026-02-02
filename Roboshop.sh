@@ -43,22 +43,18 @@ for instance in "${instances[@]}"; do
         if [ -n "$IP" ] && [ "$IP" != "None" ]; then
             echo "Assigning Public DNS record for $instance with IP $IP"
             aws route53 change-resource-record-sets --hosted-zone-id $ZoneID --change-batch "{
-              \"Changes\": [{
-                \"Action\": \"create\",\"delete\", \"UPSERT\",
-                \"ResourceRecordSet\": {
-                  \"Name\": \"$Domain.\",
-                  \"Type\": \"A\",
-                  \"TTL\": 1,
-                  \"ResourceRecords\": [{\"Value\": \"$IP\"}]
-                }
-              }]
-            }"
+          \"Changes\": [{
+          \"Action\": \"UPSERT\",
+          \"ResourceRecordSet\": {
+          \"Name\": \"$Domain.\",
+          \"Type\": \"A\",
+          \"TTL\": 60,
+          \"ResourceRecords\": [{\"Value\": \"$IP\"}]
+          }
+    }]
+   }" 
             echo "Assigned Public DNS record for $instance"
         else
-            echo "⚠️ Skipping DNS assignment for frontend — no Public IP found"
+            echo "⚠️ Skipping DNS assignment for $instance — no IP found"
         fi
     fi
-done
-
-echo "All EC2 instances created and DNS records assigned (where IPs were available)"
- 
