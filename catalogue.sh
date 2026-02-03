@@ -71,7 +71,7 @@ validate_installation $? "unzipping the files"
 npm install 
 validate_installation $? "Installing nodejs dependencies"
 
-cp /catalogue/systemd.service /etc/systemd/system/catalogue.service
+cp $scriptdir/catalogue.service /etc/systemd/system/catalogue.service
 validate_installation $? "Copying catalogue systemd file"
 systemctl daemon-reload
 validate_installation $? "Reloading systemd daemon"
