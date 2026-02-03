@@ -69,7 +69,7 @@ unzip /tmp/catalogue.zip
 validate_installation $? "unzipping the files" 
 
 npm install 
-validate $? """Installing nodejs dependencies"
+validate_installation $? "Installing nodejs dependencies"
 
 cp /catalogue/systemd.service /etc/systemd/system/catalogue.service
 validate_installation $? "Copying catalogue systemd file"
@@ -87,7 +87,7 @@ validate_installation $? "Copying MongoDB repo file"
 dnf install mongodb-mongosh -y
 validate_installation $? "Installing MongoDB Shell"
 echo -e "${green}MongoDB Shell installed successfully${nocolor}" | tee -a $log_file
-mongosh --host mongodb-dev.vk98.space </catalogue/mongo.js
+mongosh --host 3.90.232.170 </catalogue/mongo.js
 validate_installation $? "Loading catalogue schema to MongoDB"
 echo -e "${green}Catalogue setup completed successfully${nocolor}" | tee -a $log_file
 
